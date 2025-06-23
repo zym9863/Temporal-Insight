@@ -171,16 +171,24 @@ class TimeSeriesVisualizer:
             row=2, col=1
         )
         
-        # 统计信息表格
+        # 统计信息表格（优化文字颜色）
         stats = data['value'].describe()
         fig.add_trace(
             go.Table(
-                header=dict(values=['统计量', '数值']),
-                cells=dict(values=[
-                    ['数据点数', '均值', '标准差', '最小值', '最大值'],
-                    [len(data), f"{stats['mean']:.2f}", f"{stats['std']:.2f}", 
-                     f"{stats['min']:.2f}", f"{stats['max']:.2f}"]
-                ])
+                header=dict(
+                    values=['统计量', '数值'],
+                    fill_color='#1f77b4',  # 深蓝色背景
+                    font_color='white'     # 白色文字
+                ),
+                cells=dict(
+                    values=[
+                        ['数据点数', '均值', '标准差', '最小值', '最大值'],
+                        [len(data), f"{stats['mean']:.2f}", f"{stats['std']:.2f}",
+                         f"{stats['min']:.2f}", f"{stats['max']:.2f}"]
+                    ],
+                    fill_color='#f0f0f0',  # 浅灰色背景
+                    font_color='black'      # 黑色文字
+                )
             ),
             row=2, col=2
         )
