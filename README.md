@@ -1,5 +1,7 @@
 # 时序洞察 (Temporal Insight)
 
+[中文文档](README.md) | [English Version](README_EN.md)
+
 📈 智能时间序列预测系统
 
 ## 项目简介
