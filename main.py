@@ -253,12 +253,7 @@ def model_selection_section():
                 )
 
         # 处理ARIMA特殊参数
-        if selected_model == 'ARIMA' and not model_params.get('auto_order', True):
-            model_params['order'] = (
-                model_params.get('p', 1),
-                model_params.get('d', 1),
-                model_params.get('q', 1)
-            )
+        # 不再需要手动组合order参数，因为ARIMAPredictor现在直接接受auto_order参数
 
         # 训练模型
         if st.button("🚀 训练模型"):

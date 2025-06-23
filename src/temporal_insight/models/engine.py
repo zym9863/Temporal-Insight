@@ -55,6 +55,17 @@ class PredictionEngine:
             
         try:
             model_class = self.available_models[model_name]
+            
+            # 对ARIMA模型特殊处理：将p,d,q参数组合成order元组
+            if model_name == 'ARIMA':
+                # 如果参数中包含p,d,q，则组合成order元组
+                if 'p' in params and 'd' in params and 'q' in params:
+                    params['order'] = (params['p'], params['d'], params['q'])
+                    # 删除单独的p,d,q参数
+                    del params['p']
+                    del params['d']
+                    del params['q']
+            
             self.current_model = model_class(**params)
             self.model_name = model_name
             return True

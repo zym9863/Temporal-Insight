@@ -25,10 +25,10 @@ from .base import BasePredictor
 class ARIMAPredictor(BasePredictor):
     """ARIMA预测模型"""
     
-    def __init__(self, order: Tuple[int, int, int] = (1, 1, 1)):
+    def __init__(self, order: Tuple[int, int, int] = (1, 1, 1), auto_order: bool = True):
         super().__init__("ARIMA")
         self.order = order
-        self.auto_order = True
+        self.auto_order = auto_order
         
     def fit(self, data: pd.DataFrame) -> bool:
         """训练ARIMA模型"""
@@ -62,11 +62,23 @@ class ARIMAPredictor(BasePredictor):
         try:
             # 生成预测
             forecast = self.fitted_model.forecast(steps=steps)
-            conf_int = self.fitted_model.get_forecast(steps=steps).conf_int()
+            forecast_result = self.fitted_model.get_forecast(steps=steps)
+            # 兼容numpy数组和DataFrame两种返回类型
+            if hasattr(forecast_result, 'conf_int'):
+                conf_int = forecast_result.conf_int()
+                if hasattr(conf_int, 'iloc'):
+                    lower_ci = conf_int.iloc[:, 0].values
+                    upper_ci = conf_int.iloc[:, 1].values
+                else:
+                    lower_ci = conf_int[:, 0]
+                    upper_ci = conf_int[:, 1]
+            else:
+                # 如果没有置信区间，使用预测值±10%作为占位
+                std = np.std(self.train_data['value'].values) * 0.1
+                lower_ci = forecast - 1.96 * std
+                upper_ci = forecast + 1.96 * std
 
             predictions = forecast.values if hasattr(forecast, 'values') else forecast
-            lower_ci = conf_int.iloc[:, 0].values
-            upper_ci = conf_int.iloc[:, 1].values
 
             return predictions, lower_ci, upper_ci
 
